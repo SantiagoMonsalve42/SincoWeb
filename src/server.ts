@@ -8,21 +8,50 @@ import express from 'express';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
+const apiTargetUrl = (process.env['API_TARGET_URL'] || 'http://localhost:7041').replace(/\/+$/, '');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+app.use('/api', async (req, res, next) => {
+  try {
+    const targetUrl = new URL(req.originalUrl, `${apiTargetUrl}/`);
+    const hasBody = req.method !== 'GET' && req.method !== 'HEAD';
+    const headers = Object.entries(req.headers).reduce<Record<string, string>>((acc, [key, value]) => {
+      if (!value || key === 'host' || key === 'connection' || key === 'content-length') {
+        return acc;
+      }
+
+      acc[key] = Array.isArray(value) ? value.join(',') : value;
+      return acc;
+    }, {});
+
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: hasBody ? (req as unknown as BodyInit) : undefined,
+      redirect: 'manual',
+      ...(hasBody ? ({ duplex: 'half' } as RequestInit) : {}),
+    });
+
+    res.status(response.status);
+    response.headers.forEach((value, key) => {
+      if (key.toLowerCase() !== 'transfer-encoding') {
+        res.setHeader(key, value);
+      }
+    });
+
+    if (!response.body) {
+      res.end();
+      return;
+    }
+
+    const responseBody = Buffer.from(await response.arrayBuffer());
+    res.end(responseBody);
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * Serve static files from /browser

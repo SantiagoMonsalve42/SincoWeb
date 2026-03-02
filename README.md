@@ -57,3 +57,28 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Docker
+
+This project is ready to run in Docker using the provided `Dockerfile`.
+
+Build image:
+
+```bash
+docker build -t sinco-web .
+```
+
+Run container:
+
+```bash
+docker run --rm -p 4000:4000 --env-file .env sinco-web
+```
+
+### Environment variables for Docker Compose
+
+Create a `.env` file (you can copy from `.env.example`) with:
+
+- `PORT`: port used by the Node SSR server inside the container.
+- `API_TARGET_URL`: backend base URL used by the SSR proxy for `/api` routes. Example for compose network: `http://api:8080`.
+
+In production build, Angular calls `/api/*` and the Node server in `src/server.ts` proxies those requests to `API_TARGET_URL`.
