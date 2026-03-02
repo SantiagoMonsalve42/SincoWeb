@@ -1,10 +1,41 @@
-<main class="app-shell">
-	<mat-slide-toggle
-		[checked]="isDarkMode()"
-		(change)="onThemeToggle($event.checked)"
-	>
-		Modo oscuro
-	</mat-slide-toggle>
+<mat-sidenav-container class="layout">
+	<mat-sidenav class="layout-sidenav" mode="side" [opened]="isSidenavOpen()">
+		<nav class="layout-nav">
+			<button mat-stroked-button (click)="closeSidenav()">Cerrar menú</button>
 
-	<router-outlet />
-</main>
+			<button mat-flat-button routerLink="/">Vista principal</button>
+
+			<mat-slide-toggle
+				class="theme-switch"
+				[checked]="isDarkMode()"
+				(change)="onThemeToggle($event.checked)"
+			>
+				Modo oscuro
+			</mat-slide-toggle>
+		</nav>
+	</mat-sidenav>
+
+	<mat-sidenav-content class="layout-content">
+		@if (!isSidenavOpen()) {
+			<button
+				type="button"
+				class="hamburger-button"
+				aria-label="Abrir menú"
+				(click)="openSidenav()"
+			>
+				<span class="hamburger-line"></span>
+				<span class="hamburger-line"></span>
+				<span class="hamburger-line"></span>
+			</button>
+		}
+
+		<section class="view-container">
+			<router-outlet></router-outlet>
+		</section>
+
+		<ng-container
+			[ngComponentOutlet]="footerComponent"
+			[ngComponentOutletInputs]="footerInputs"
+		></ng-container>
+	</mat-sidenav-content>
+</mat-sidenav-container>
