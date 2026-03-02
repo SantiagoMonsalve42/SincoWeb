@@ -1,1 +1,73 @@
-<p>to-do</p>
+<mat-card appearance="outlined" class="paquetes-card " >
+	<div class="header-row">
+		<h2 class="title">Gestion de Paquetes</h2>
+
+		<div class="header-actions">
+			<mat-form-field appearance="outline" class="estado-filter">
+				<mat-label>Estado</mat-label>
+				<mat-select [formControl]="estadoIdControl" [disabled]="isLoadingEstados() || isLoading()">
+					<mat-option [value]="null">Todos</mat-option>
+
+					@for (estado of estados(); track estado.estadoId) {
+						<mat-option [value]="estado.estadoId">{{ estado.descripcion }}</mat-option>
+					}
+				</mat-select>
+			</mat-form-field>
+		</div>
+	</div>
+
+	@if (errorMessage()) {
+		<div class="state-row">{{ errorMessage() }}</div>
+	} @else {
+		@if (isLoading()) {
+			<div class="state-row">
+				<mat-spinner diameter="36"></mat-spinner>
+				<span>Cargando datos...</span>
+			</div>
+		}
+
+		<div class="table-wrapper">
+			<table mat-table [dataSource]="dataSource" matSort class="full-width-table">
+				
+				<ng-container matColumnDef="descripcion">
+					<th mat-header-cell *matHeaderCellDef>Descripción</th>
+					<td mat-cell *matCellDef="let paquete">{{ paquete.descripcion }}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="peso">
+					<th mat-header-cell *matHeaderCellDef>Peso</th>
+					<td mat-cell *matCellDef="let paquete">{{ paquete.peso }}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="codigoSeguimiento">
+					<th mat-header-cell *matHeaderCellDef>Código</th>
+					<td mat-cell *matCellDef="let paquete">{{ paquete.codigoSeguimiento }}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="prioridad">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header>Prioridad</th>
+					<td mat-cell *matCellDef="let paquete">{{ paquete.prioridad }}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="estado">
+					<th mat-header-cell *matHeaderCellDef>Estado</th>
+					<td mat-cell *matCellDef="let paquete">{{ paquete.estado }}</td>
+				</ng-container>
+
+				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+				<tr
+					mat-row
+					*matRowDef="let row; columns: displayedColumns"
+					[class.high-priority-row]="row.esPrioridadAlta"
+				></tr>
+			</table>
+		</div>
+
+		<mat-paginator
+			[pageSize]="defaultPageSize"
+			[pageSizeOptions]="pageSizeOptions"
+			[disabled]="isLoading()"
+			showFirstLastButtons
+		></mat-paginator>
+	}
+</mat-card>

@@ -1,3 +1,55 @@
 :host {
   display: block;
 }
+
+.paquetes-card {
+  width: 100%; 
+  padding: 10px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.estado-filter {
+  min-width: 220px;
+}
+
+.title {
+  margin: 0;
+}
+
+.table-wrapper {
+  overflow: auto;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.state-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+}
+
+.high-priority-row {
+  background-color: var(--mat-sys-error-container);
+}
+
+.high-priority-row .mat-mdc-cell {
+  color: var(--mat-sys-on-error-container);
+  font-weight: 600;
+}
