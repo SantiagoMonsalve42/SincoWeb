@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Asignar paquete</h2>
+
+<mat-dialog-content>
+  <p class="subtitle">Código: {{ data.codigoSeguimiento }}</p>
+
+  <form class="dialog-form" [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Repartidor</mat-label>
+      <mat-select formControlName="repartidorId" [disabled]="isLoadingRepartidores() || isSaving()">
+        @for (repartidor of repartidores(); track repartidor.repartidorId) {
+          <mat-option [value]="repartidor.repartidorId">{{ repartidor.nombreCompleto }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.repartidorId.hasError('required') && form.controls.repartidorId.touched) {
+        <mat-error>Debes seleccionar un repartidor.</mat-error>
+      }
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()" [disabled]="isSaving()">Cancelar</button>
+  <button mat-flat-button type="button" (click)="save()" [disabled]="isSaving() || isLoadingRepartidores()">
+    @if (isSaving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Asignar
+    }
+  </button>
+</mat-dialog-actions>

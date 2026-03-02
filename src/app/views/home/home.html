@@ -3,6 +3,7 @@
 		<h2 class="title">Gestion de Paquetes</h2>
 
 		<div class="header-actions">
+			<button class="add-button" mat-flat-button type="button" (click)="openCreatePaqueteModal()">+</button>
 			<mat-form-field appearance="outline" class="estado-filter">
 				<mat-label>Estado</mat-label>
 				<mat-select [formControl]="estadoIdControl" [disabled]="isLoadingEstados() || isLoading()">
@@ -19,6 +20,10 @@
 	@if (errorMessage()) {
 		<div class="state-row">{{ errorMessage() }}</div>
 	} @else {
+		@if (actionMessage()) {
+			<div class="state-row">{{ actionMessage() }}</div>
+		}
+
 		@if (isLoading()) {
 			<div class="state-row">
 				<mat-spinner diameter="36"></mat-spinner>
@@ -54,6 +59,31 @@
 					<td mat-cell *matCellDef="let paquete">{{ paquete.estado }}</td>
 				</ng-container>
 
+				<ng-container matColumnDef="acciones">
+					<th mat-header-cell *matHeaderCellDef>Acciones</th>
+					<td mat-cell *matCellDef="let paquete">
+						@if (paquete.estadoId !== 3) {
+							<button
+								type="button"
+								mat-icon-button
+								[matMenuTriggerFor]="accionesMenu"
+								aria-label="Abrir acciones del paquete"
+							>
+								⋮
+							</button>
+
+							<mat-menu #accionesMenu="matMenu">
+								@if (paquete.estadoId === 1) {
+									<button mat-menu-item type="button" [disabled]="isDelivering()" (click)="openAssignPaqueteModal(paquete)">Asignar</button>
+								}
+								@if (paquete.estadoId === 2) {
+									<button mat-menu-item type="button" [disabled]="isDelivering()" (click)="markAsDelivered(paquete)">Entregar</button>
+								}
+							</mat-menu>
+						}
+					</td>
+				</ng-container>
+
 				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 				<tr
 					mat-row
@@ -64,9 +94,9 @@
 		</div>
 
 		<mat-paginator
-			[pageSize]="defaultPageSize"
+			[pageSize]="currentPageSize"
 			[pageSizeOptions]="pageSizeOptions"
-			[disabled]="isLoading()"
+			(page)="onPageChange($event)"
 			showFirstLastButtons
 		></mat-paginator>
 	}

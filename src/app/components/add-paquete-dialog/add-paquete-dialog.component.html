@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Agregar paquete</h2>
+
+<mat-dialog-content>
+  <form class="dialog-form" [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Descripción</mat-label>
+      <input matInput formControlName="descripcion" maxlength="250" />
+      @if (form.controls.descripcion.hasError('required') && form.controls.descripcion.touched) {
+        <mat-error>La descripción es obligatoria.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Peso Kg.</mat-label>
+      <input matInput type="number" formControlName="peso" min="1" />
+      @if (form.controls.peso.hasError('required') && form.controls.peso.touched) {
+        <mat-error>El peso es obligatorio.</mat-error>
+      }
+      @if (form.controls.peso.hasError('min') && form.controls.peso.touched) {
+        <mat-error>El peso debe ser mayor que 0.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prioridad</mat-label>
+      <mat-select formControlName="prioridadId" [disabled]="isLoadingPrioridades()">
+        @for (prioridad of prioridades(); track prioridad.prioridadId) {
+          <mat-option [value]="prioridad.prioridadId">{{ prioridad.descripcion }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.prioridadId.hasError('required') && form.controls.prioridadId.touched) {
+        <mat-error>La prioridad es obligatoria.</mat-error>
+      }
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()" [disabled]="isSaving()">Cancelar</button>
+  <button mat-flat-button type="button" (click)="save()" [disabled]="isSaving() || isLoadingPrioridades()">
+    @if (isSaving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      Guardar
+    }
+  </button>
+</mat-dialog-actions>

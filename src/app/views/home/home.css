@@ -23,7 +23,13 @@
 }
 
 .estado-filter {
+  margin-top: 22px;
   min-width: 220px;
+}
+
+.add-button {
+  height: 56px;
+  min-height: 56px;
 }
 
 .title {
